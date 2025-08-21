@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -23,6 +24,7 @@ import {
   Hash,
   LayoutGrid,
   Shuffle,
+  Swords
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const menuItems = [
+    {
+      href: "/games",
+      label: "Games",
+      icon: Swords,
+    },
     {
       href: "/trivia",
       label: "Trivia Challenge",
@@ -85,7 +92,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === item.href}
+                  isActive={pathname.startsWith(item.href)}
                   tooltip={item.label}
                 >
                   <a href={item.href}>
