@@ -22,6 +22,7 @@ import {
   HelpCircle,
   Hash,
   LayoutGrid,
+  Shuffle,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       href: "/memory-game",
       label: "Memory Game",
       icon: LayoutGrid,
+    },
+    {
+      href: "/word-scramble",
+      label: "Word Scramble",
+      icon: Shuffle,
     }
   ];
 
