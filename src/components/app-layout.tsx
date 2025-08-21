@@ -20,6 +20,7 @@ import {
   Calendar,
   Settings,
   HelpCircle,
+  Hash,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       label: "Daily Training",
       icon: Calendar,
     },
+    {
+      href: "/guess-the-number",
+      label: "Guess the Number",
+      icon: Hash,
+    }
   ];
 
   return (
