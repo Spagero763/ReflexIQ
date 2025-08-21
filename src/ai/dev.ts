@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/adaptive-difficulty.ts';
 import '@/ai/flows/word-ladder.ts';
+import '@/ai/flows/word-search.ts';

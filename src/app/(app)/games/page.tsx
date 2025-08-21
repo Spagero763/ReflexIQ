@@ -1,7 +1,7 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BrainCircuit, Puzzle, Hash, LayoutGrid, Shuffle, User, VenetianMask, CaseUpper } from "lucide-react";
+import { ArrowRight, BrainCircuit, Puzzle, Hash, LayoutGrid, Shuffle, User, VenetianMask, CaseUpper, Search } from "lucide-react";
 import Link from "next/link";
 
 const gameCategories = [
@@ -23,6 +23,11 @@ const gameCategories = [
                 href: "/games/word-ladder",
                 label: "Word Ladder",
                 icon: CaseUpper
+            },
+            {
+                href: "/games/word-search",
+                label: "Word Search",
+                icon: Search
             }
         ]
     },

@@ -21,11 +21,7 @@ import {
   Calendar,
   Settings,
   HelpCircle,
-  Hash,
-  LayoutGrid,
-  Shuffle,
   Swords,
-  CaseUpper
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -36,7 +32,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const menuItems = [
     {
       href: "/games",
-      label: "Games",
+      label: "Game Hub",
       icon: Swords,
     },
     {
@@ -59,26 +55,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       label: "Daily Training",
       icon: Calendar,
     },
-    {
-      href: "/guess-the-number",
-      label: "Guess the Number",
-      icon: Hash,
-    },
-    {
-      href: "/memory-game",
-      label: "Memory Game",
-      icon: LayoutGrid,
-    },
-    {
-      href: "/word-scramble",
-      label: "Word Scramble",
-      icon: Shuffle,
-    },
-    {
-      href: "/games/word-ladder",
-      label: "Word Ladder",
-      icon: CaseUpper
-    }
   ];
 
   return (
