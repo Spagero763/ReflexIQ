@@ -2,22 +2,31 @@
 "use server";
 
 import { adjustDifficulty } from "@/ai/flows/adaptive-difficulty";
-import { generateWordLadder as generateWordLadderFlow, validateWordStep as validateWordStepFlow, type GenerateWordLadderInput, type ValidateWordStepInput } from "@/ai/flows/word-ladder";
-import { generateWordSearch as generateWordSearchFlow, type GenerateWordSearchInput } from "@/ai/flows/word-search";
-import { generateTriviaQuestion as generateTriviaFlow, type GenerateTriviaInput } from "@/ai/flows/trivia";
-import { generateLogicPuzzle as generateLogicPuzzleFlow, type GenerateLogicPuzzleInput } from "@/ai/flows/generate-logic-puzzle";
-import { generateHangmanWord as generateHangmanWordFlow, type GenerateHangmanWordInput } from "@/ai/flows/hangman-word";
-import { generateScrambledWord as generateScrambledWordFlow, type GenerateScrambledWordInput } from "@/ai/flows/scramble-word";
+import { generateWordLadder as generateWordLadderFlow, validateWordStep as validateWordStepFlow } from "@/ai/flows/word-ladder";
+import { generateWordSearch as generateWordSearchFlow } from "@/ai/flows/word-search";
+import { generateTriviaQuestion as generateTriviaFlow } from "@/ai/flows/trivia";
+import { generateLogicPuzzle as generateLogicPuzzleFlow } from "@/ai/flows/generate-logic-puzzle";
+import { generateHangmanWord as generateHangmanWordFlow } from "@/ai/flows/hangman-word";
+import { generateScrambledWord as generateScrambledWordFlow } from "@/ai/flows/scramble-word";
 
-export type { GenerateWordLadderOutput, WordLadderPathItem } from "@/ai/flows/word-ladder";
-export type { GenerateWordSearchOutput } from "@/ai/flows/word-search";
-export type { GenerateTriviaOutput, GenerateTriviaInput } from "@/ai/flows/trivia";
-export type { GenerateLogicPuzzleOutput } from "@/ai/flows/generate-logic-puzzle";
-export type { GenerateHangmanWordOutput } from "@/ai/flows/hangman-word";
-export type { GenerateScrambledWordOutput } from "@/ai/flows/scramble-word";
+import type { GenerateWordLadderInput, ValidateWordStepInput, GenerateWordLadderOutput, WordLadderPathItem } from "@/ai/schemas/word-ladder";
+import type { GenerateWordSearchInput, GenerateWordSearchOutput } from "@/ai/schemas/word-search";
+import type { GenerateTriviaOutput, GenerateTriviaInput } from "@/ai/schemas/trivia";
+import type { GenerateLogicPuzzleInput, GenerateLogicPuzzleOutput } from "@/ai/schemas/generate-logic-puzzle";
+import type { GenerateHangmanWordInput, GenerateHangmanWordOutput } from "@/ai/schemas/hangman-word";
+import type { GenerateScrambledWordInput, GenerateScrambledWordOutput } from "@/ai/schemas/scramble-word";
+import type { AdjustDifficultyInput, AdjustDifficultyOutput } from "@/ai/schemas/adaptive-difficulty";
+
+export type { GenerateWordLadderOutput, WordLadderPathItem };
+export type { GenerateWordSearchOutput };
+export type { GenerateTriviaOutput, GenerateTriviaInput };
+export type { GenerateLogicPuzzleOutput };
+export type { GenerateHangmanWordOutput };
+export type { GenerateScrambledWordOutput };
+export type { AdjustDifficultyOutput };
 
 
-export async function getAdjustedDifficulty(input: any) {
+export async function getAdjustedDifficulty(input: AdjustDifficultyInput): Promise<AdjustDifficultyOutput> {
   try {
     const output = await adjustDifficulty(input);
     return output;

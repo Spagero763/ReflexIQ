@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -12,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bot, Zap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { AdjustDifficultyOutput } from "@/ai/flows/adaptive-difficulty";
+import type { AdjustDifficultyOutput } from "@/app/actions";
 
 const formSchema = z.object({
   performanceScore: z.coerce.number().min(0, "Score must be positive").max(100, "Score cannot exceed 100"),
