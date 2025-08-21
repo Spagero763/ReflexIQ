@@ -90,10 +90,12 @@ export default function PuzzlesPage() {
                         <Lightbulb className="h-4 w-4 mr-2"/>
                         {showSolution ? 'Hide Solution' : 'Show Solution'}
                     </Button>
-                    <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                        <Check className="h-4 w-4 mr-2" />
-                        Submit Solution
-                    </Button>
+                    {!showSolution && (
+                        <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                            <Check className="h-4 w-4 mr-2" />
+                            Submit Solution
+                        </Button>
+                    )}
                 </CardFooter>
                 </>
             )}
