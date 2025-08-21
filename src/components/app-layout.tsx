@@ -24,7 +24,8 @@ import {
   Hash,
   LayoutGrid,
   Shuffle,
-  Swords
+  Swords,
+  CaseUpper
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       href: "/word-scramble",
       label: "Word Scramble",
       icon: Shuffle,
+    },
+    {
+      href: "/games/word-ladder",
+      label: "Word Ladder",
+      icon: CaseUpper
     }
   ];
 
