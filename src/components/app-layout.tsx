@@ -89,12 +89,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
           <div className="flex items-center gap-3 p-2">
             <Avatar className="h-9 w-9">
-              <AvatarImage src="https://placehold.co/100x100.png" alt="User" />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarImage src="https://placehold.co/100x100.png" alt="Alex" />
+              <AvatarFallback>A</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="text-sm font-medium">User</span>
-              <span className="text-xs text-muted-foreground">user@email.com</span>
+              <span className="text-sm font-medium">Alex</span>
+              <span className="text-xs text-muted-foreground">alex@email.com</span>
             </div>
           </div>
         </SidebarFooter>
