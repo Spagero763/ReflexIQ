@@ -9,9 +9,10 @@ import { CheckCircle, XCircle, Lightbulb, Loader, AlertTriangle } from 'lucide-r
 import { cn } from '@/lib/utils';
 import { generateTrivia, type GenerateTriviaOutput } from '@/app/actions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 const TIME_LIMIT = 15; // seconds
-const CATEGORIES = ["Science", "History", "Movies", "Geography", "Technology"];
+const CATEGORIES = ["Science", "History", "Movies", "Geography", "Technology", "General Knowledge"];
 
 export default function TriviaPage() {
   const [currentQuestion, setCurrentQuestion] = useState<GenerateTriviaOutput | null>(null);
@@ -21,8 +22,9 @@ export default function TriviaPage() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>(CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)]);
 
-  const fetchNewQuestion = useCallback(async () => {
+  const fetchNewQuestion = useCallback(async (category: string) => {
     setLoading(true);
     setError(null);
     setSelectedOption(null);
@@ -30,7 +32,6 @@ export default function TriviaPage() {
     setTimeLeft(TIME_LIMIT);
     
     try {
-      const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
       const question = await generateTrivia({ category, difficulty: "Medium" });
       setCurrentQuestion(question);
     } catch (e) {
@@ -42,8 +43,8 @@ export default function TriviaPage() {
   }, []);
 
   useEffect(() => {
-    fetchNewQuestion();
-  }, [fetchNewQuestion]);
+    fetchNewQuestion(selectedCategory);
+  }, [fetchNewQuestion, selectedCategory]);
 
   useEffect(() => {
     if (selectedOption === null && !loading && !error) {
@@ -72,7 +73,7 @@ export default function TriviaPage() {
     }
 
     setTimeout(() => {
-      fetchNewQuestion();
+      fetchNewQuestion(selectedCategory);
     }, 2000);
   };
 
@@ -91,8 +92,20 @@ export default function TriviaPage() {
   
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-      <div className="flex items-center">
+      <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Trivia Challenge</h1>
+        <div className="flex items-center gap-2">
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                    {CATEGORIES.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
       </div>
       <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
         <Card className="w-full max-w-2xl transform transition-all duration-300 ease-in-out">
@@ -112,7 +125,7 @@ export default function TriviaPage() {
               <CardContent className="p-6 text-center">
                 <AlertTriangle className="mx-auto h-12 w-12 text-destructive" />
                 <p className="mt-4 text-lg text-destructive">{error || "Something went wrong."}</p>
-                 <Button onClick={fetchNewQuestion} className="mt-4">Try Again</Button>
+                 <Button onClick={() => fetchNewQuestion(selectedCategory)} className="mt-4">Try Again</Button>
               </CardContent>
           ) : (
             <>
