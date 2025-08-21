@@ -4,24 +4,29 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, Brain, RefreshCw } from 'lucide-react';
+import { LayoutGrid, Brain, RefreshCw, Anchor, Bike, Bomb, Car, Diamond, FlaskConical, Heart, Plane, Icon as LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-const icons = [
-  'Anchor', 'Bike', 'Bomb', 'Car', 'Diamond', 'FlaskConical', 'Heart', 'Plane'
-];
+const iconComponents: { [key: string]: LucideIcon } = {
+  Anchor, Bike, Bomb, Car, Diamond, FlaskConical, Heart, Plane
+};
 
-const shuffleArray = (array: string[]) => {
+const iconNames = Object.keys(iconComponents);
+
+const shuffleArray = (array: any[]) => {
   return array.sort(() => Math.random() - 0.5);
 };
 
 export default function MemoryGamePage() {
-  const [cards, setCards] = useState<string[]>([]);
+  const [cards, setCards] = useState<{name: string, Component: LucideIcon}[]>([]);
   const [flipped, setFlipped] = useState<number[]>([]);
   const [matched, setMatched] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
 
   const initializeGame = () => {
-    const gameCards = shuffleArray([...icons, ...icons]);
+    const duplicatedIcons = [...iconNames, ...iconNames];
+    const shuffledIcons = shuffleArray(duplicatedIcons);
+    const gameCards = shuffledIcons.map(name => ({ name, Component: iconComponents[name] }));
     setCards(gameCards);
     setFlipped([]);
     setMatched([]);
@@ -43,7 +48,7 @@ export default function MemoryGamePage() {
 
     if (newFlipped.length === 2) {
       const [firstIndex, secondIndex] = newFlipped;
-      if (cards[firstIndex] === cards[secondIndex]) {
+      if (cards[firstIndex].name === cards[secondIndex].name) {
         setMatched([...matched, firstIndex, secondIndex]);
       }
       setTimeout(() => setFlipped([]), 1000);
@@ -77,20 +82,23 @@ export default function MemoryGamePage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-4 gap-4">
-                    {cards.map((icon, index) => {
+                    {cards.map(({ Component }, index) => {
                         const isFlipped = flipped.includes(index) || matched.includes(index);
                         return (
                             <Card 
                                 key={index} 
                                 onClick={() => handleCardClick(index)}
-                                className={`aspect-square flex items-center justify-center cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}
-                                style={{ transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)', transformStyle: 'preserve-3d' }}
+                                className={cn(
+                                    `aspect-square flex items-center justify-center cursor-pointer transition-transform duration-500 transform-style-3d`,
+                                    isFlipped ? 'rotate-y-180' : ''
+                                )}
+                                style={{ transformStyle: 'preserve-3d' }}
                             >
                                 <div className="absolute w-full h-full flex items-center justify-center backface-hidden">
                                    <LayoutGrid className="h-10 w-10 text-muted-foreground" />
                                 </div>
                                 <div className="absolute w-full h-full flex items-center justify-center rotate-y-180 backface-hidden bg-primary rounded-lg">
-                                    <span className="text-4xl text-primary-foreground">{icon.charAt(0)}</span>
+                                    <Component className="h-10 w-10 text-primary-foreground" />
                                 </div>
                             </Card>
                         )
