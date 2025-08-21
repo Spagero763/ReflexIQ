@@ -36,7 +36,7 @@ const gameCategories = [
         description: "Test your problem-solving and reasoning abilities.",
         games: [
             {
-                href: "/puzzles", // This will be moved later
+                href: "/games/logic-puzzles",
                 label: "Logic Puzzles",
                 icon: Puzzle
             },
@@ -63,7 +63,7 @@ const gameCategories = [
         description: "How much do you know about the world?",
         games: [
              {
-                href: "/trivia", // This will be moved later
+                href: "/trivia",
                 label: "Trivia Challenge",
                 icon: BrainCircuit
             },
