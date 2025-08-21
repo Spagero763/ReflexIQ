@@ -10,22 +10,22 @@ const gameCategories = [
         description: "Challenge your vocabulary and spelling skills.",
         games: [
             {
-                href: "/games/word-scramble",
+                href: "/games/word-scramble/play",
                 label: "Word Scramble",
                 icon: Shuffle
             },
             {
-                href: "/games/hangman",
+                href: "/games/hangman/play",
                 label: "Hangman",
                 icon: User
             },
             {
-                href: "/games/word-ladder",
+                href: "/games/word-ladder/play",
                 label: "Word Ladder",
                 icon: CaseUpper
             },
             {
-                href: "/games/word-search",
+                href: "/games/word-search/play",
                 label: "Word Search",
                 icon: Search
             }
@@ -36,12 +36,12 @@ const gameCategories = [
         description: "Test your problem-solving and reasoning abilities.",
         games: [
             {
-                href: "/games/logic-puzzles",
+                href: "/games/logic-puzzles/play",
                 label: "Logic Puzzles",
                 icon: Puzzle
             },
             {
-                href: "/games/memory-game",
+                href: "/games/memory-game/play",
                 label: "Memory Game",
                 icon: LayoutGrid
             },
@@ -52,7 +52,7 @@ const gameCategories = [
         description: "Put your numerical intuition to the test.",
         games: [
             {
-                href: "/games/guess-the-number",
+                href: "/games/guess-the-number/play",
                 label: "Guess the Number",
                 icon: Hash
             },
