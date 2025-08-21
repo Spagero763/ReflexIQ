@@ -1,7 +1,7 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shuffle, ArrowRight } from "lucide-react";
+import { Shuffle, ArrowRight, BrainCircuit } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,7 +10,10 @@ export default function WordScrambleLandingPage() {
     <main className="flex flex-1 flex-col items-center justify-center gap-6 p-4 lg:p-6">
       <div className="max-w-2xl w-full">
         <Card className="overflow-hidden">
-             <CardHeader className="p-0">
+             <CardHeader className="p-0 relative">
+                 <div className="absolute top-4 right-4 bg-primary/80 text-primary-foreground p-2 rounded-lg z-10 backdrop-blur-sm">
+                    <BrainCircuit className="h-6 w-6" />
+                 </div>
                  <Image src="https://placehold.co/600x300.png" alt="Word Scramble Game" width={600} height={300} className="w-full" data-ai-hint="alphabet letters jumbled" />
             </CardHeader>
             <div className="p-6">
