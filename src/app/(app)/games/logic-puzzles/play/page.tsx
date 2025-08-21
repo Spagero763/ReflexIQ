@@ -3,19 +3,22 @@
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, Check, RefreshCw, Loader, AlertTriangle } from "lucide-react";
+import { Clock, Check, RefreshCw, AlertTriangle, Lightbulb } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { generateLogicPuzzle, type GenerateLogicPuzzleOutput } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function PuzzlesPage() {
     const [puzzle, setPuzzle] = useState<GenerateLogicPuzzleOutput | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showSolution, setShowSolution] = useState(false);
 
     const fetchNewPuzzle = useCallback(async () => {
         setLoading(true);
         setError(null);
+        setShowSolution(false);
         try {
             const newPuzzle = await generateLogicPuzzle({ difficulty: "Medium" });
             setPuzzle(newPuzzle);
@@ -68,14 +71,25 @@ export default function PuzzlesPage() {
                     <div className="p-4 bg-secondary rounded-lg">
                         <p className="text-secondary-foreground whitespace-pre-wrap">{puzzle.puzzle}</p>
                     </div>
-
-                    <Textarea placeholder="Describe your solution..." rows={5} className="focus:ring-accent" />
+                    
+                    {showSolution ? (
+                        <Alert variant="default" className="bg-green-100 border-green-500 text-green-800 dark:bg-green-900/50 dark:border-green-700 dark:text-green-300">
+                            <AlertTitle className="font-bold flex items-center gap-2">
+                                <Lightbulb className="h-5 w-5" /> Solution
+                            </AlertTitle>
+                            <AlertDescription className="whitespace-pre-wrap">
+                                {puzzle.solution}
+                            </AlertDescription>
+                        </Alert>
+                    ): (
+                         <Textarea placeholder="Describe your solution..." rows={5} className="focus:ring-accent" />
+                    )}
                 </CardContent>
                 <CardFooter className="flex justify-between items-center">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4 mr-1.5" />
-                        <span>No time limit. Think carefully!</span>
-                    </div>
+                    <Button variant="ghost" onClick={() => setShowSolution(!showSolution)}>
+                        <Lightbulb className="h-4 w-4 mr-2"/>
+                        {showSolution ? 'Hide Solution' : 'Show Solution'}
+                    </Button>
                     <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
                         <Check className="h-4 w-4 mr-2" />
                         Submit Solution
