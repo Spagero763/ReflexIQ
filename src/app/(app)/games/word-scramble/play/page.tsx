@@ -5,30 +5,10 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, Lightbulb, CheckCircle, XCircle } from "lucide-react";
+import { RefreshCw, Lightbulb, CheckCircle, XCircle, Loader } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-
-const words = ["react", "nextjs", "tailwind", "genkit", "firebase", "javascript", "typescript", "component", "developer"];
-
-const scrambleWord = (word: string) => {
-  const a = word.split("");
-  const n = a.length;
-  // Ensure the scrambled word is not the same as the original, unless it's a very short word.
-  if (n < 3) return a.sort(() => Math.random() - 0.5).join("");
-
-  let scrambledWord;
-  do {
-    // Fisher-Yates shuffle
-    for (let i = n - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    scrambledWord = a.join("");
-  } while (scrambledWord === word);
-  
-  return scrambledWord;
-};
+import { generateScrambledWord } from "@/app/actions";
 
 export default function WordScramblePage() {
   const [originalWord, setOriginalWord] = useState("");
@@ -36,15 +16,30 @@ export default function WordScramblePage() {
   const [guess, setGuess] = useState("");
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const newWord = useCallback(() => {
-    const word = words[Math.floor(Math.random() * words.length)];
-    setOriginalWord(word);
-    setScrambledWord(scrambleWord(word));
+  const newWord = useCallback(async () => {
+    setLoading(true);
     setGuess("");
     setIsCorrect(null);
-  }, []);
+    try {
+        const { originalWord, scrambledWord } = await generateScrambledWord({ category: "General", difficulty: "Medium" });
+        setOriginalWord(originalWord);
+        setScrambledWord(scrambledWord);
+    } catch (error) {
+        console.error("Failed to fetch new word", error);
+        setOriginalWord("GENKIT");
+        setScrambledWord("TIGKEN");
+        toast({
+            title: "Error",
+            description: "Could not fetch a new word. Using a default word.",
+            variant: "destructive"
+        })
+    } finally {
+        setLoading(false);
+    }
+  }, [toast]);
 
   useEffect(() => {
     newWord();
@@ -56,7 +51,7 @@ export default function WordScramblePage() {
         return;
     }
 
-    if (guess.toLowerCase() === originalWord) {
+    if (guess.toLowerCase() === originalWord.toLowerCase()) {
       setIsCorrect(true);
       setScore(prev => prev + 1);
       setTimeout(() => {
@@ -70,7 +65,7 @@ export default function WordScramblePage() {
   const handleShowHint = () => {
       toast({
           title: "Hint",
-          description: `The word starts with '${originalWord[0]}' and has ${originalWord.length} letters.`
+          description: `The word starts with '${originalWord[0].toUpperCase()}' and has ${originalWord.length} letters.`
       });
   }
 
@@ -85,46 +80,54 @@ export default function WordScramblePage() {
             <CardTitle>Unscramble the Word</CardTitle>
             <CardDescription>Use the letters to form a meaningful word. Current Score: {score}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-center items-center bg-secondary p-8 rounded-lg">
-                <p className="text-4xl font-bold tracking-widest text-secondary-foreground">{scrambledWord.toUpperCase()}</p>
-            </div>
-             <form onSubmit={(e) => { e.preventDefault(); handleGuess(); }} className="flex gap-2">
-                <Input
-                    type="text"
-                    placeholder="Your guess..."
-                    value={guess}
-                    onChange={(e) => {
-                        setGuess(e.target.value);
-                        if (isCorrect !== null) setIsCorrect(null);
-                    }}
-                    disabled={isCorrect === true}
-                    className={cn(
-                        "text-center text-lg h-12",
-                        isCorrect === true && "border-green-500",
-                        isCorrect === false && "border-red-500"
-                    )}
-                />
-                <Button type="submit" disabled={isCorrect === true} className="h-12">Submit</Button>
-            </form>
-            {isCorrect === true && (
-                <p className="text-green-600 font-semibold flex items-center justify-center gap-2">
-                    <CheckCircle /> Correct! Well done.
-                </p>
-            )}
-            {isCorrect === false && (
-                <p className="text-red-600 font-semibold flex items-center justify-center gap-2">
-                    <XCircle /> Not quite. Try again!
-                </p>
+          <CardContent className="space-y-4 min-h-[250px]">
+            {loading ? (
+                <div className="flex justify-center items-center h-full">
+                    <Loader className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            ) : (
+                <>
+                <div className="flex justify-center items-center bg-secondary p-8 rounded-lg">
+                    <p className="text-4xl font-bold tracking-widest text-secondary-foreground">{scrambledWord.toUpperCase()}</p>
+                </div>
+                <form onSubmit={(e) => { e.preventDefault(); handleGuess(); }} className="flex gap-2">
+                    <Input
+                        type="text"
+                        placeholder="Your guess..."
+                        value={guess}
+                        onChange={(e) => {
+                            setGuess(e.target.value);
+                            if (isCorrect !== null) setIsCorrect(null);
+                        }}
+                        disabled={isCorrect === true || loading}
+                        className={cn(
+                            "text-center text-lg h-12",
+                            isCorrect === true && "border-green-500",
+                            isCorrect === false && "border-red-500"
+                        )}
+                    />
+                    <Button type="submit" disabled={isCorrect === true || loading} className="h-12">Submit</Button>
+                </form>
+                {isCorrect === true && (
+                    <p className="text-green-600 font-semibold flex items-center justify-center gap-2">
+                        <CheckCircle /> Correct! Well done.
+                    </p>
+                )}
+                {isCorrect === false && (
+                    <p className="text-red-600 font-semibold flex items-center justify-center gap-2">
+                        <XCircle /> Not quite. Try again!
+                    </p>
+                )}
+                </>
             )}
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button onClick={handleShowHint} variant="ghost" disabled={isCorrect === true}>
+            <Button onClick={handleShowHint} variant="ghost" disabled={isCorrect === true || loading}>
                 <Lightbulb className="mr-2" />
                 Hint
             </Button>
-            <Button onClick={newWord} variant="outline">
-              <RefreshCw className="mr-2" />
+            <Button onClick={newWord} variant="outline" disabled={loading}>
+              <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
               New Word
             </Button>
           </CardFooter>

@@ -7,12 +7,14 @@ import { generateWordSearch as generateWordSearchFlow, type GenerateWordSearchIn
 import { generateTriviaQuestion as generateTriviaFlow, type GenerateTriviaInput } from "@/ai/flows/trivia";
 import { generateLogicPuzzle as generateLogicPuzzleFlow, type GenerateLogicPuzzleInput } from "@/ai/flows/generate-logic-puzzle";
 import { generateHangmanWord as generateHangmanWordFlow, type GenerateHangmanWordInput } from "@/ai/flows/hangman-word";
+import { generateScrambledWord as generateScrambledWordFlow, type GenerateScrambledWordInput } from "@/ai/flows/scramble-word";
 
 export type { GenerateWordLadderOutput, WordLadderPathItem } from "@/ai/flows/word-ladder";
 export type { GenerateWordSearchOutput } from "@/ai/flows/word-search";
 export type { GenerateTriviaOutput, GenerateTriviaInput } from "@/ai/flows/trivia";
 export type { GenerateLogicPuzzleOutput } from "@/ai/flows/generate-logic-puzzle";
 export type { GenerateHangmanWordOutput } from "@/ai/flows/hangman-word";
+export type { GenerateScrambledWordOutput } from "@/ai/flows/scramble-word";
 
 
 export async function getAdjustedDifficulty(input: any) {
@@ -83,5 +85,15 @@ export async function generateHangmanWord(input: GenerateHangmanWordInput) {
     } catch (e: any) {
         console.error(e);
         throw new Error(`Failed to generate hangman word: ${e.message}`);
+    }
+}
+
+export async function generateScrambledWord(input: GenerateScrambledWordInput) {
+    try {
+        const output = await generateScrambledWordFlow(input);
+        return output;
+    } catch (e: any) {
+        console.error(e);
+        throw new Error(`Failed to generate scrambled word: ${e.message}`);
     }
 }
