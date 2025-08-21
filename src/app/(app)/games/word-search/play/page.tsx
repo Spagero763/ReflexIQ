@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader, RefreshCw, Search } from 'lucide-react';
+import { Loader, RefreshCw, Search, Lightbulb } from 'lucide-react';
 import { generateWordSearch, GenerateWordSearchOutput } from '@/app/actions';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +19,7 @@ export default function WordSearchPlayPage() {
     const [error, setError] = useState<string | null>(null);
     const [selection, setSelection] = useState<Selection[]>([]);
     const [foundWords, setFoundWords] = useState<string[]>([]);
+    const [hintedCells, setHintedCells] = useState<Selection[]>([]);
     const { toast } = useToast();
 
     const startNewGame = useCallback(async () => {
@@ -26,6 +27,7 @@ export default function WordSearchPlayPage() {
         setError(null);
         setFoundWords([]);
         setSelection([]);
+        setHintedCells([]);
         try {
             const newPuzzle = await generateWordSearch({ category: 'Common', difficulty: 'Medium' });
             setPuzzle(newPuzzle);
@@ -51,22 +53,21 @@ export default function WordSearchPlayPage() {
     };
     
     const checkSelection = () => {
-        if (selection.length < 2) return;
+        if (selection.length < 2 || !puzzle) return;
 
         let selectedWord = "";
-        // This sorting is important to handle selections in any direction
         const sortedSelection = [...selection].sort((a, b) => {
             if (a.row !== b.row) return a.row - b.row;
             return a.col - b.col;
         });
 
         sortedSelection.forEach(s => {
-            selectedWord += puzzle?.grid[s.row][s.col];
+            selectedWord += puzzle.grid[s.row][s.col];
         });
         
         const reversedSelectedWord = selectedWord.split('').reverse().join('');
 
-        const wordToFind = puzzle?.words.find(w => w.toUpperCase() === selectedWord || w.toUpperCase() === reversedSelectedWord);
+        const wordToFind = puzzle.words.find(w => w.toUpperCase() === selectedWord || w.toUpperCase() === reversedSelectedWord);
 
         if (wordToFind) {
             if (!foundWords.includes(wordToFind)) {
@@ -80,6 +81,26 @@ export default function WordSearchPlayPage() {
             })
         }
         setSelection([]);
+    };
+
+    const showHint = () => {
+        if (!puzzle) return;
+        const unfoundWords = puzzle.words.filter(w => !foundWords.includes(w));
+        if (unfoundWords.length === 0) return;
+
+        const wordToHint = unfoundWords[0];
+        // This is a simplification. A real implementation would need to know the start coords of each word.
+        // For now, let's just find the first letter on the grid.
+        for(let r=0; r<puzzle.grid.length; r++) {
+            for(let c=0; c<puzzle.grid[r].length; c++) {
+                if (puzzle.grid[r][c] === wordToHint[0].toUpperCase()) {
+                    setHintedCells([{row: r, col: c}]);
+                    toast({title: "Hint", description: `The first letter of an unfound word is highlighted.`})
+                    setTimeout(() => setHintedCells([]), 2000);
+                    return;
+                }
+            }
+        }
     };
 
     if (loading) {
@@ -101,9 +122,14 @@ export default function WordSearchPlayPage() {
                         <div className="flex items-center gap-2">
                             <Search /> Word Search
                         </div>
-                        <Button onClick={startNewGame} variant="outline" size="sm">
-                            <RefreshCw className="mr-2 h-4 w-4" /> New Game
-                        </Button>
+                         <div className="flex gap-2">
+                            <Button onClick={showHint} variant="ghost" size="sm" disabled={isGameWon || loading}>
+                                <Lightbulb className="mr-2 h-4 w-4" /> Hint
+                            </Button>
+                            <Button onClick={startNewGame} variant="outline" size="sm">
+                                <RefreshCw className="mr-2 h-4 w-4" /> New Game
+                            </Button>
+                        </div>
                     </CardTitle>
                     <CardDescription>
                         Find all the hidden words in the grid.
@@ -115,13 +141,15 @@ export default function WordSearchPlayPage() {
                            {puzzle?.grid.map((row, rowIndex) => (
                                 row.map((cell, colIndex) => {
                                     const isSelected = selection.some(s => s.row === rowIndex && s.col === colIndex);
+                                    const isHinted = hintedCells.some(h => h.row === rowIndex && h.col === colIndex);
                                     return (
                                         <div 
                                             key={`${rowIndex}-${colIndex}`}
                                             onClick={() => handleCellClick(rowIndex, colIndex)}
                                             className={cn(
-                                                "aspect-square flex items-center justify-center rounded-md cursor-pointer select-none font-bold text-lg",
-                                                isSelected ? "bg-primary text-primary-foreground" : "bg-card hover:bg-card/80"
+                                                "aspect-square flex items-center justify-center rounded-md cursor-pointer select-none font-bold text-lg transition-colors",
+                                                isSelected ? "bg-primary text-primary-foreground" : "bg-card hover:bg-card/80",
+                                                isHinted && "bg-accent text-accent-foreground animate-pulse"
                                             )}
                                         >
                                             {cell}

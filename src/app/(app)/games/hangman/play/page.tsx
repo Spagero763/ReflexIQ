@@ -5,9 +5,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RefreshCw, User, Trophy, Frown, Loader } from 'lucide-react';
+import { RefreshCw, User, Trophy, Frown, Loader, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateHangmanWord } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
 
 const MAX_INCORRECT_GUESSES = 6;
 
@@ -48,6 +49,7 @@ export default function HangmanPage() {
     const [wordToGuess, setWordToGuess] = useState("");
     const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
     
     const incorrectGuesses = guessedLetters.filter(
         letter => !wordToGuess.includes(letter)
@@ -93,6 +95,15 @@ export default function HangmanPage() {
         };
     }, [addGuessedLetter]);
 
+    const showHint = () => {
+        const unGuessedLetters = wordToGuess.split("").filter(letter => !guessedLetters.includes(letter));
+        if (unGuessedLetters.length > 0) {
+            const hintLetter = unGuessedLetters[Math.floor(Math.random() * unGuessedLetters.length)];
+            addGuessedLetter(hintLetter);
+            toast({ title: "Hint Used!", description: `The letter '${hintLetter}' has been revealed.`});
+        }
+    }
+
     return (
         <main className="flex flex-1 flex-col items-center justify-center gap-4 p-4 lg:p-6">
             <Card className="w-full max-w-3xl">
@@ -101,9 +112,14 @@ export default function HangmanPage() {
                         <div className="flex items-center gap-2">
                            <User /> Hangman
                         </div>
-                        <Button onClick={startGame} variant="outline" size="sm" disabled={loading}>
-                            <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> New Game
-                        </Button>
+                        <div className="flex gap-2">
+                             <Button onClick={showHint} variant="ghost" size="sm" disabled={loading || isWinner || isLoser}>
+                                <Lightbulb className="mr-2 h-4 w-4" /> Hint
+                            </Button>
+                            <Button onClick={startGame} variant="outline" size="sm" disabled={loading}>
+                                <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> New Game
+                            </Button>
+                        </div>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center min-h-[400px]">

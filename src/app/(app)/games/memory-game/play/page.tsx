@@ -4,8 +4,9 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, Brain, RefreshCw, Anchor, Bike, Bomb, Car, Diamond, FlaskConical, Heart, Plane, Icon as LucideIcon } from 'lucide-react';
+import { LayoutGrid, Brain, RefreshCw, Anchor, Bike, Bomb, Car, Diamond, FlaskConical, Heart, Plane, Icon as LucideIcon, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 const iconComponents: { [key: string]: LucideIcon } = {
   Anchor, Bike, Bomb, Car, Diamond, FlaskConical, Heart, Plane
@@ -22,6 +23,8 @@ export default function MemoryGamePage() {
   const [flipped, setFlipped] = useState<number[]>([]);
   const [matched, setMatched] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
+  const [showHint, setShowHint] = useState(false);
+  const { toast } = useToast();
 
   const initializeGame = () => {
     const duplicatedIcons = [...iconNames, ...iconNames];
@@ -31,6 +34,7 @@ export default function MemoryGamePage() {
     setFlipped([]);
     setMatched([]);
     setMoves(0);
+    setShowHint(false);
   };
 
   useEffect(() => {
@@ -55,6 +59,15 @@ export default function MemoryGamePage() {
     }
   };
 
+  const handleShowHint = () => {
+    toast({ title: "Hint Used!", description: "All cards revealed for 1 second."});
+    const allIndices = Array.from({length: cards.length}, (_, i) => i);
+    setFlipped(allIndices);
+    setTimeout(() => {
+        setFlipped([]);
+    }, 1000);
+  }
+
   const isGameWon = matched.length === cards.length && cards.length > 0;
 
   return (
@@ -69,10 +82,16 @@ export default function MemoryGamePage() {
                     <Brain />
                     <span>Moves: {Math.floor(moves / 2)}</span>
                 </div>
-                <Button onClick={initializeGame} variant="outline">
-                    <RefreshCw className="mr-2" />
-                    Reset Game
-                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleShowHint} variant="ghost" disabled={isGameWon}>
+                        <Lightbulb className="mr-2" />
+                        Hint
+                    </Button>
+                    <Button onClick={initializeGame} variant="outline">
+                        <RefreshCw className="mr-2" />
+                        Reset Game
+                    </Button>
+                </div>
             </div>
 
             {isGameWon ? (
@@ -85,9 +104,8 @@ export default function MemoryGamePage() {
                     {cards.map(({ Component }, index) => {
                         const isFlipped = flipped.includes(index) || matched.includes(index);
                         return (
-                            <div className="perspective-1000">
+                            <div key={index} className="perspective-1000">
                                 <Card 
-                                    key={index} 
                                     onClick={() => handleCardClick(index)}
                                     className={cn(
                                         `relative aspect-square w-full transform-style-3d cursor-pointer transition-transform duration-500`,
@@ -111,6 +129,3 @@ export default function MemoryGamePage() {
     </main>
   );
 }
-
-
-  

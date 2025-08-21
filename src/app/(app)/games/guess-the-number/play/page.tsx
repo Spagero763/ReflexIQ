@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Frown, Smile, Gamepad2 } from "lucide-react";
+import { Frown, Smile, Gamepad2, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const MAX_NUMBER = 100;
@@ -57,6 +57,13 @@ export default function GuessTheNumberPage() {
     setGuess("");
   };
 
+  const showHint = () => {
+    toast({
+        title: "Hint",
+        description: `The number is ${targetNumber % 2 === 0 ? 'even' : 'odd'}.`
+    });
+  }
+
   if (!isClient) {
     return null;
   }
@@ -92,9 +99,15 @@ export default function GuessTheNumberPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             {!gameOver ? (
-              <Button onClick={handleGuess} className="w-full bg-primary hover:bg-primary/90">
-                Submit Guess
-              </Button>
+              <div className="w-full space-y-2">
+                <Button onClick={handleGuess} className="w-full bg-primary hover:bg-primary/90">
+                    Submit Guess
+                </Button>
+                 <Button onClick={showHint} variant="ghost" className="w-full">
+                    <Lightbulb className="mr-2 h-4 w-4"/>
+                    Hint
+                </Button>
+              </div>
             ) : (
                 <div className="flex items-center text-green-600 font-bold text-lg">
                     <Smile className="h-6 w-6 mr-2"/> Great Job!
