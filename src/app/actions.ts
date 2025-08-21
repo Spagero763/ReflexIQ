@@ -9,7 +9,7 @@ import { generateLogicPuzzle as generateLogicPuzzleFlow, type GenerateLogicPuzzl
 
 export type { GenerateWordLadderOutput, WordLadderPathItem } from "@/ai/flows/word-ladder";
 export type { GenerateWordSearchOutput } from "@/ai/flows/word-search";
-export type { GenerateTriviaOutput } from "@/ai/flows/trivia";
+export type { GenerateTriviaOutput, GenerateTriviaInput } from "@/ai/flows/trivia";
 export type { GenerateLogicPuzzleOutput } from "@/ai/flows/generate-logic-puzzle";
 
 
@@ -73,4 +73,5 @@ export async function generateLogicPuzzle(input: GenerateLogicPuzzleInput) {
         throw new Error(`Failed to generate logic puzzle: ${e.message}`);
     }
 }
+
 
