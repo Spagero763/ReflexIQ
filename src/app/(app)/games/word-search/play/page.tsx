@@ -54,7 +54,13 @@ export default function WordSearchPlayPage() {
         if (selection.length < 2) return;
 
         let selectedWord = "";
-        selection.forEach(s => {
+        // This sorting is important to handle selections in any direction
+        const sortedSelection = [...selection].sort((a, b) => {
+            if (a.row !== b.row) return a.row - b.row;
+            return a.col - b.col;
+        });
+
+        sortedSelection.forEach(s => {
             selectedWord += puzzle?.grid[s.row][s.col];
         });
         
@@ -65,10 +71,6 @@ export default function WordSearchPlayPage() {
         if (wordToFind) {
             if (!foundWords.includes(wordToFind)) {
                 setFoundWords([...foundWords, wordToFind]);
-                toast({
-                    title: "Word Found!",
-                    description: `You found "${wordToFind}"!`,
-                });
             }
         } else {
             toast({
