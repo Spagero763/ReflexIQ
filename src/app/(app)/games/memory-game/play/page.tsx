@@ -85,40 +85,32 @@ export default function MemoryGamePage() {
                     {cards.map(({ Component }, index) => {
                         const isFlipped = flipped.includes(index) || matched.includes(index);
                         return (
-                            <Card 
-                                key={index} 
-                                onClick={() => handleCardClick(index)}
-                                className={cn(
-                                    `aspect-square flex items-center justify-center cursor-pointer transition-transform duration-500 transform-style-3d`,
-                                    isFlipped ? 'rotate-y-180' : ''
-                                )}
-                                style={{ transformStyle: 'preserve-3d' }}
-                            >
-                                <div className="absolute w-full h-full flex items-center justify-center backface-hidden">
-                                   <LayoutGrid className="h-10 w-10 text-muted-foreground" />
-                                </div>
-                                <div className="absolute w-full h-full flex items-center justify-center rotate-y-180 backface-hidden bg-primary rounded-lg">
-                                    <Component className="h-10 w-10 text-primary-foreground" />
-                                </div>
-                            </Card>
+                            <div className="perspective-1000">
+                                <Card 
+                                    key={index} 
+                                    onClick={() => handleCardClick(index)}
+                                    className={cn(
+                                        `relative aspect-square w-full transform-style-3d cursor-pointer transition-transform duration-500`,
+                                        isFlipped && '[transform:rotateY(180deg)]'
+                                    )}
+                                >
+                                    <div className="absolute inset-0 flex items-center justify-center [backface-visibility:hidden]">
+                                       <LayoutGrid className="h-10 w-10 text-muted-foreground" />
+                                    </div>
+                                    <div className="absolute inset-0 flex items-center justify-center [transform:rotateY(180deg)] [backface-visibility:hidden] bg-primary rounded-lg">
+                                        <Component className="h-10 w-10 text-primary-foreground" />
+                                    </div>
+                                </Card>
+                            </div>
                         )
                     })}
                 </div>
             )}
         </Card>
       </div>
-        <style jsx>{`
-            .transform-style-3d {
-                transform-style: preserve-3d;
-            }
-            .rotate-y-180 {
-                transform: rotateY(180deg);
-            }
-            .backface-hidden {
-                backface-visibility: hidden;
-                -webkit-backface-visibility: hidden;
-            }
-        `}</style>
     </main>
   );
 }
+
+
+  

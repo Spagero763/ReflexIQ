@@ -93,7 +93,30 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      perspective: {
+        '1000': '1000px',
+      },
+      transformStyle: {
+        '3d': 'preserve-3d',
+      }
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    function ({ addUtilities }: { addUtilities: any }) {
+      addUtilities({
+        '.transform-style-3d': {
+          'transform-style': 'preserve-3d',
+        },
+        '.perspective-1000': {
+          'perspective': '1000px',
+        },
+        '.backface-hidden': {
+          'backface-visibility': 'hidden',
+        },
+      });
+    },
+  ],
 } satisfies Config;
+
+  
