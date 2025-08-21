@@ -5,10 +5,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RefreshCw, User, Trophy, Frown } from 'lucide-react';
+import { RefreshCw, User, Trophy, Frown, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { generateHangmanWord } from '@/app/actions';
 
-const words = ["DEVELOPER", "TAILWIND", "NEXTJS", "GENKIT", "FIREBASE", "REACT"];
 const MAX_INCORRECT_GUESSES = 6;
 
 const HangmanDrawing = ({ numberOfGuesses }: { numberOfGuesses: number }) => {
@@ -47,6 +47,7 @@ const HangmanDrawing = ({ numberOfGuesses }: { numberOfGuesses: number }) => {
 export default function HangmanPage() {
     const [wordToGuess, setWordToGuess] = useState("");
     const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
+    const [loading, setLoading] = useState(true);
     
     const incorrectGuesses = guessedLetters.filter(
         letter => !wordToGuess.includes(letter)
@@ -55,10 +56,19 @@ export default function HangmanPage() {
     const isLoser = incorrectGuesses.length >= MAX_INCORRECT_GUESSES;
     const isWinner = wordToGuess.split("").every(letter => guessedLetters.includes(letter)) && wordToGuess !== "";
 
-    const startGame = useCallback(() => {
-        const newWord = words[Math.floor(Math.random() * words.length)];
-        setWordToGuess(newWord);
+    const startGame = useCallback(async () => {
+        setLoading(true);
         setGuessedLetters([]);
+        try {
+            const { word } = await generateHangmanWord({ category: "General", difficulty: "Medium" });
+            setWordToGuess(word.toUpperCase());
+        } catch (error) {
+            console.error("Failed to fetch new word", error);
+            // Fallback to a default word in case of API error
+            setWordToGuess("GENKIT");
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     useEffect(() => {
@@ -91,12 +101,12 @@ export default function HangmanPage() {
                         <div className="flex items-center gap-2">
                            <User /> Hangman
                         </div>
-                        <Button onClick={startGame} variant="outline" size="sm">
-                            <RefreshCw className="mr-2 h-4 w-4" /> New Game
+                        <Button onClick={startGame} variant="outline" size="sm" disabled={loading}>
+                            <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> New Game
                         </Button>
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center min-h-[400px]">
                     <div className="flex justify-center">
                         <HangmanDrawing numberOfGuesses={incorrectGuesses.length} />
                     </div>
@@ -119,18 +129,27 @@ export default function HangmanPage() {
                                 </AlertDescription>
                             </Alert>
                         )}
-                        <div className="flex gap-2 text-4xl font-bold tracking-widest">
-                            {wordToGuess.split("").map((letter, index) => (
-                                <span key={index} className="border-b-4 border-foreground w-10 text-center">
-                                    <span className={cn(
-                                        "transition-opacity",
-                                        guessedLetters.includes(letter) || isLoser ? "opacity-100" : "opacity-0"
-                                    )}>
-                                        {letter}
+
+                        {loading ? (
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <Loader className="h-6 w-6 animate-spin" />
+                                <p>Generating a new word...</p>
+                            </div>
+                        ): (
+                            <div className="flex gap-2 text-4xl font-bold tracking-widest">
+                                {wordToGuess.split("").map((letter, index) => (
+                                    <span key={index} className="border-b-4 border-foreground w-10 text-center">
+                                        <span className={cn(
+                                            "transition-opacity",
+                                            guessedLetters.includes(letter) || isLoser ? "opacity-100" : "opacity-0"
+                                        )}>
+                                            {letter}
+                                        </span>
                                     </span>
-                                </span>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
+                        
                         <div className="flex flex-wrap gap-2 justify-center max-w-sm">
                             {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(key => {
                                 const isActive = guessedLetters.includes(key);
@@ -141,7 +160,7 @@ export default function HangmanPage() {
                                         size="icon"
                                         variant={isActive ? (isInactive ? 'destructive' : 'outline') : 'outline'}
                                         onClick={() => addGuessedLetter(key)}
-                                        disabled={isActive || isWinner || isLoser}
+                                        disabled={isActive || isWinner || isLoser || loading}
                                         className={cn("text-lg", isActive && !isInactive && "bg-green-200 text-green-800")}
                                     >
                                         {key}
