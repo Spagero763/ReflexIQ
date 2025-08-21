@@ -16,11 +16,13 @@ export default function WordLadderPlayPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isWinner, setIsWinner] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const startNewGame = async () => {
     setLoading(true);
     setError(null);
     setIsWinner(false);
+    setShowHint(false);
     try {
       const newPuzzle = await generateWordLadder({ difficulty: "Medium" });
       setPuzzle(newPuzzle);
@@ -132,12 +134,24 @@ export default function WordLadderPlayPage() {
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
+             {showHint && puzzle && (
+                <Alert variant="default" className="bg-accent/20 border-accent/50 text-accent-foreground">
+                    <Lightbulb className="h-4 w-4 text-accent" />
+                    <AlertTitle>Optimal Path</AlertTitle>
+                    <AlertDescription>
+                        <div className="flex flex-wrap gap-2">
+                            {puzzle.optimalPath.map(p => p.word).join(" → ")}
+                        </div>
+                    </AlertDescription>
+                </Alert>
+            )}
         </CardContent>
         <CardFooter className="flex justify-between">
             <p className="text-sm text-muted-foreground">Steps: {path.length - 1}</p>
             {puzzle && !isWinner &&
-              <Button variant="ghost" disabled>
-                  <Lightbulb className="mr-2" /> Optimal: {puzzle.optimalPath.length -1} steps
+              <Button variant="ghost" onClick={() => setShowHint(!showHint)}>
+                  <Lightbulb className="mr-2" /> 
+                  {showHint ? "Hide Hint" : `Optimal: ${puzzle.optimalPath.length - 1} steps`}
               </Button>
             }
         </CardFooter>
