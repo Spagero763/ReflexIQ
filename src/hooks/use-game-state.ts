@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 /**
  * Custom hook for tracking game state
@@ -11,7 +11,12 @@ export const useGameState = (initialScore: number = 0) => {
 
   useEffect(() => {
     if (!isGameActive) return;
-    setStartTime(new Date());
+    
+    const timer = setTimeout(() => {
+      setStartTime(new Date());
+    }, 0);
+    
+    return () => clearTimeout(timer);
   }, [isGameActive]);
 
   const addScore = (points: number) => {
