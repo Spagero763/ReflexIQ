@@ -27,12 +27,19 @@ export type { AdjustDifficultyOutput };
 
 
 export async function getAdjustedDifficulty(input: AdjustDifficultyInput): Promise<AdjustDifficultyOutput> {
+  if (!input || typeof input !== 'object') {
+    throw new Error('Invalid input: difficulty adjustment input must be a valid object');
+  }
+  
   try {
     const output = await adjustDifficulty(input);
+    if (!output) {
+      throw new Error('No output received from difficulty adjustment service');
+    }
     return output;
   } catch (e: any) {
-    console.error(e);
-    throw new Error(`Failed to adjust difficulty: ${e.message}`);
+    console.error('Difficulty adjustment error:', e);
+    throw new Error(`Failed to adjust difficulty: ${e?.message || 'Unknown error'}`);
   }
 }
 
