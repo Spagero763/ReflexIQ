@@ -12,6 +12,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Log performance metrics in development
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    if ('performance' in window && 'PerformanceObserver' in window) {
+      // Monitor Core Web Vitals
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          console.debug(`[Performance] ${entry.name}:`, entry);
+        }
+      });
+      observer.observe({ entryTypes: ['paint', 'largest-contentful-paint', 'first-input', 'layout-shift'] });
+    }
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
