@@ -19,12 +19,18 @@ export const useGameState = (initialScore: number = 0) => {
     return () => clearTimeout(timer);
   }, [isGameActive]);
 
-  const addScore = (points: number) => {
-    setScore((prev) => prev + points);
-    if (score > 0 && (score + points) % 1000 === 0) {
-      setLevel((prev) => prev + 1);
-    }
-  };
+  const addScore = useCallback((points: number) => {
+    if (typeof points !== 'number' || points < 0) return;
+    
+    setScore((prev) => {
+      const newScore = prev + points;
+      // Level up every 1000 points
+      if (newScore > 0 && newScore % 1000 === 0 && newScore > prev) {
+        setLevel((prevLevel) => prevLevel + 1);
+      }
+      return newScore;
+    });
+  }, []);
 
   const resetGame = () => {
     setScore(initialScore);
